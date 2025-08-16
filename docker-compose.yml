@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  gameplatform:
+    build:
+      context: ./GamePlatform
+      dockerfile: Dockerfile
+    container_name: gameplatform
+    ports:
+      - "5100:80"
+      - "5101:443"
+    depends_on:
+      - redis
+    environment:
+      - Redis__Connection=redis:6379
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"

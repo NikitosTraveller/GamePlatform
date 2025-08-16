@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  gameplatform:
+    ports:
+      - "5100:80"
+      - "5101:443"
+    environment:
+      - Redis__Connection=redis:6379
+
+  redis:
+    ports:
+      - "6379:6379"
