@@ -12,7 +12,6 @@ public class PlayerService : IPlayerService
 
     public PlayerService(IRedisService redisService) => _redisService = redisService;
 
-    // Store player profile (Hash)
     public async Task CreateOrUpdatePlayerAsync(Player player)
     {
         var key = PlayerKeyPrefix + player.Id;
@@ -38,7 +37,6 @@ public class PlayerService : IPlayerService
         };
     }
 
-    // Player stats (with caching)
     public async Task<PlayerStats> GetStatsAsync(string playerId)
     {
         var key = PlayerStatsPrefix + playerId;
@@ -46,7 +44,6 @@ public class PlayerService : IPlayerService
         if (cached.HasValue)
             return System.Text.Json.JsonSerializer.Deserialize<PlayerStats>(cached!)!;
 
-        // Simulate calculation
         var stats = new PlayerStats { GamesPlayed = 10, Wins = 6, Losses = 4 };
         await _redisService.Db.StringSetAsync(key, System.Text.Json.JsonSerializer.Serialize(stats), TimeSpan.FromMinutes(5));
         return stats;

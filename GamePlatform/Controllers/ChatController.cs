@@ -15,7 +15,6 @@ public class ChatController : ControllerBase
         _chatService = chatService;
     }
 
-    // Publish a message to a channel
     [HttpPost("send")]
     public async Task<IActionResult> SendMessage([FromBody] Message message)
     {
@@ -23,7 +22,6 @@ public class ChatController : ControllerBase
         return Ok();
     }
 
-    // Subscribe to a channel (for demo/testing purposes)
     [HttpGet("subscribe/{channel}")]
     public IActionResult Subscribe(string channel)
     {

@@ -10,7 +10,6 @@ public class ActivityService : IActivityService
 
     public ActivityService(IRedisService redisService) => _redisService = redisService;
 
-    // Track daily login using Bitmap
     public async Task MarkLoginAsync(string playerId)
     {
         var key = DailyLoginPrefix + DateTime.UtcNow.ToString("yyyyMMdd");
@@ -24,7 +23,6 @@ public class ActivityService : IActivityService
         return await _redisService.Db.StringBitCountAsync(key);
     }
 
-    // Track unique players using HyperLogLog
     public async Task AddUniquePlayerAsync(string playerId)
     {
         await _redisService.Db.HyperLogLogAddAsync(UniquePlayersKey, playerId);
