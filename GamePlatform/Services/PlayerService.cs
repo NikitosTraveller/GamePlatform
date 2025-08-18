@@ -39,6 +39,13 @@ public class PlayerService : IPlayerService
 
     public async Task<PlayerStats> GetStatsAsync(string playerId)
     {
+        var player = await GetPlayerAsync(playerId);
+
+        if (player == null)
+        {
+            return null;
+        }
+
         var key = PlayerStatsPrefix + playerId;
         var cached = await _redisService.Db.StringGetAsync(key);
         if (cached.HasValue)
