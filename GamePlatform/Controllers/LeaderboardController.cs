@@ -10,18 +10,27 @@ public class LeaderboardController : ControllerBase
 {
     private readonly ILeaderboardService _leaderboardService;
     private readonly IRateLimiterService _rateLimiterService;
+    private readonly IPlayerService _playerService;
 
     public LeaderboardController(
         ILeaderboardService leaderboardService, 
-        IRateLimiterService rateLimiterService)
+        IRateLimiterService rateLimiterService,
+        IPlayerService playerService)
     {
         _leaderboardService = leaderboardService;
         _rateLimiterService = rateLimiterService;
+        _playerService = playerService;
     }
 
     [HttpPost("score")]
     public async Task<IActionResult> SubmitScore([FromBody] Score score)
     {
+        var player = await _playerService.GetPlayerAsync(score.PlayerId);
+
+        if (player == null) {
+            return NotFound("Player doesn't exist");
+        }
+
         if (!await _rateLimiterService.IsAllowedAsync($"score:{score.PlayerId}", 5, TimeSpan.FromSeconds(10)))
             return TooManyRequests("Rate limit exceeded.");
 
@@ -39,6 +48,13 @@ public class LeaderboardController : ControllerBase
     [HttpGet("rank/{playerId}")]
     public async Task<IActionResult> GetRank(string playerId)
     {
+        var player = await _playerService.GetPlayerAsync(playerId);
+
+        if (player == null)
+        {
+            return NotFound("Player doesn't exist");
+        }
+
         var rank = await _leaderboardService.GetRankAsync(playerId);
         return Ok(new { PlayerId = playerId, Rank = rank });
     }

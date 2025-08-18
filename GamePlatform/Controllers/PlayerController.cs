@@ -35,16 +35,29 @@ public class PlayerController : ControllerBase
     }
 
     [HttpGet("{id}/stats")]
-    public async Task<IActionResult> GetStats(string id)
+    public async Task<IActionResult> GetStats(string playerId)
     {
-        var stats = await _playerService.GetStatsAsync(id);
+        var player = _playerService.GetPlayerAsync(playerId);
+
+        if (player == null) { 
+            return NotFound("Player doesn't exist");
+        }
+
+        var stats = await _playerService.GetStatsAsync(playerId);
         return Ok(stats);
     }
 
     [HttpPost("{id}/login")]
-    public async Task<IActionResult> Login(string id)
+    public async Task<IActionResult> Login(string playerId)
     {
-        await _activityService.MarkLoginAsync(id);
+        var player = _playerService.GetPlayerAsync(playerId);
+
+        if (player == null)
+        {
+            return NotFound("Player doesn't exist");
+        }
+
+        await _activityService.MarkLoginAsync(playerId);
         return Ok();
     }
 
